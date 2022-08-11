@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wit.sullog.mapper.MainMapper">
+	<insert id="insertUser" parameterType="hashmap">
+		INSERT INTO login (type, email) 
+		SELECT #{type}, #{email} FROM DUAL
+		WHERE NOT EXISTS(SELECT type, email FROM login WHERE type=#{type} AND email=#{email}) 
+	</insert>
+	<select id="getUserInfoByEmail" parameterType="String" resultType="com.wit.sullog.model.User">
+		SELECT * FROM login WHERE email = #{email} AND type=#{type}
+	</select>
+	
+	<select id="getRecordsByUserSeq" resultType="com.wit.sullog.model.AlcholRecordResponse">
+		SELECT * FROM alchol_record WHERE user_seq=#{user_seq}
+	</select>
+	<insert id="insertRecord" parameterType="com.wit.sullog.model.AlcholRecord" >
+		INSERT INTO alchol_record (user_seq, alchol_seq, taste, img_seq, people, time)
+		VALUES (#{user_seq}, #{alchol_seq}, #{taste}, #{img_seq}, #{people}, #{time})
+	</insert>
+	<update id="updateRecord" parameterType="com.wit.sullog.model.AlcholRecord">
+		UPDATE alchol_record SET taste = #{taste}, img_seq = #{img_seq}, people = #{people}, time = #{time} 
+		WHERE user_seq = #{user_seq} AND alchol_seq=#{alchol_seq}
+	</update>
+	<select id="getRecordByUserSeqAndAlcholSeq" parameterType="hashmap" resultType="com.wit.sullog.model.AlcholRecordResponse">
+		SELECT * FROM alchol_record WHERE user_seq=#{user_seq} AND alchol_seq=#{alchol_seq}
+	</select>
+	<delete id="deleteRecordByUserSeqAndAlcholSeq" parameterType="hashmap">
+		DELETE FROM alchol_record WHERE user_seq=#{user_seq} AND alchol_seq=#{alchol_seq}
+	</delete>
+	<select id="getImageByAlcholSeq" parameterType="int" resultType="String">
+		SELECT img_seq FROM alchol_record WHERE alchol_seq=#{alchol_seq}
+	</select>
+	
+	<select id="getAlchols" parameterType="hashmap" resultType="com.wit.sullog.model.Alchol">
+		SELECT * FROM alchol
+	</select>
+	<!--
+	<select id="getAlchols" resultType="com.wit.sullog.model.Alchol">
+		SELECT * FROM alchol
+	</select> -->
+	<select id="searchAlcholsByKeyword" parameterType="hashmap" resultType="com.wit.sullog.model.Alchol">
+		SELECT * FROM alchol WHERE name LIKE CONCAT('%', #{keyword}, '%')
+	</select>
+	<!--
+	<select id="searchAlcholsByKeyword" parameterType="String" resultType="com.wit.sullog.model.Alchol">
+		SELECT * FROM alchol WHERE name LIKE CONCAT('%', #{keyword}, '%')
+	</select> -->
+	<select id="getAlcholByType" parameterType="hashmap" resultType="com.wit.sullog.model.Alchol">
+		SELECT * FROM alchol WHERE type=#{type}
+	</select>
+	<!--
+	<select  id="getAlcholByType" parameterType="String" resultType="com.wit.sullog.model.Alchol">
+		SELECT * FROM alchol WHERE type=#{type}
+	</select> -->
+	
+	<select  id ="test" parameterType="hashmap" resultType="com.wit.sullog.model.Alchol">
+		SELECT * FROM alchol
+	</select>
+</mapper>

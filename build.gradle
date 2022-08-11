@@ -1,0 +1,53 @@
+plugins {
+	id 'org.springframework.boot' version '2.7.1'
+	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+	id 'java'
+	id 'war'
+}
+
+group = 'com.wit'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:2.2.2'
+	compileOnly 'org.projectlombok:lombok'
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	runtimeOnly 'mysql:mysql-connector-java'
+	annotationProcessor 'org.projectlombok:lombok'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	
+	//builder 오류
+	annotationProcessor('org.projectlombok:lombok')
+	testAnnotationProcessor('org.projectlombok:lombok')
+	//oauth
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	//webclient
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+	implementation 'org.projectreactor:reactor-spring:1.0.1.RELEASE'
+	//jsp 사용하기 위한 설정
+	//implementation 'javax.servlet:jstl'
+	//providedCompile 'org.apache.tomcat.embed:tomcat-embed-jasper'
+	//json
+	implementation group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1.1'
+	implementation "org.springframework.boot:spring-boot-starter-security"
+	//pagination
+	implementation 'com.github.pagehelper:pagehelper-spring-boot-starter:1.2.10'
+	//implementation 'com.github.pagehelper:pagehelper:3.6.0'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}

@@ -1,0 +1,30 @@
+server:
+  port: 8080
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/sullog?serverTimeZone=URC&CharacterEncoding=UTF-8
+    username: root
+    password: alswn
+  #pagination cycle 오류
+  main:
+    allow-circular-references: true
+  #mvc:
+  #  view:
+  #    prefix: /WEB-INF/jsp/
+  #    suffix: .jsp
+mybatis:
+  mapper-locations: mapper/**/*.xml
+  
+#pagination
+pagehelper:  
+  helper-dialect: mysql
+  #auto-dialect: true  
+  #page-size-zero: false  
+  reasonable: true  
+  #offset-as-page-num: false  
+  #row-bounds-with-count: false  
+  #auto-runtime-dialect: false  
+  #close-conn: true  
+  #default-count: true
+  #support-methods-arguments: true

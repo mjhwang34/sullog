@@ -22,6 +22,7 @@ public interface MainMapper {
 	AlcholRecordResponse getRecordByUserSeqAndAlcholSeq(HashMap <String, Integer> info);
 	int deleteRecordByUserSeqAndAlcholSeq(HashMap <String, Integer> info);
 	List <String> getImageByAlcholSeq(int alchol_seq);
+	List <AlcholRecord> searchRecordByKeyword(HashMap <String, Object> info);
 	
 	Page <Alchol> getAlchols(HashMap <String, Integer> page_features);
 	//List <Alchol> getAlchols();

@@ -15,11 +15,11 @@
 		SELECT * FROM alchol_record WHERE user_seq=#{user_seq}
 	</select>
 	<insert id="insertRecord" parameterType="com.wit.sullog.model.AlcholRecord" >
-		INSERT INTO alchol_record (user_seq, alchol_seq, taste, img_seq, people, time)
-		VALUES (#{user_seq}, #{alchol_seq}, #{taste}, #{img_seq}, #{people}, #{time})
+		INSERT INTO alchol_record (user_seq, alchol_seq, star, abv, incense, taste, texture, img_seq, time, flower, fruit, grain, nut, sweetness, dairy, etc)
+		VALUES (#{user_seq}, #{alchol_seq}, #{star}, #{abv}, #{incense}, #{taste}, #{texture}, #{img_seq}, #{time}, #{flower}, #{fruit}, #{grain}, #{nut}, #{sweetness}, #{dairy}, #{etc})
 	</insert>
 	<update id="updateRecord" parameterType="com.wit.sullog.model.AlcholRecord">
-		UPDATE alchol_record SET taste = #{taste}, img_seq = #{img_seq}, people = #{people}, time = #{time} 
+		UPDATE alchol_record SET star = #{star}, abv = #{abv}, incense = #{incense}, taste = #{taste}, texture = #{texture}, img_seq = #{img_seq}, time = #{time}, flower = #{flower}, fruit = #{fruit}, grain = #{grain}, nut = #{nut}, sweetness = #{sweetness}, dairy = #{dairy}, etc = #{etc} 
 		WHERE user_seq = #{user_seq} AND alchol_seq=#{alchol_seq}
 	</update>
 	<select id="getRecordByUserSeqAndAlcholSeq" parameterType="hashmap" resultType="com.wit.sullog.model.AlcholRecordResponse">
@@ -31,6 +31,13 @@
 	<select id="getImageByAlcholSeq" parameterType="int" resultType="String">
 		SELECT img_seq FROM alchol_record WHERE alchol_seq=#{alchol_seq}
 	</select>
+	<select id="searchRecordByKeyword" parameterType="hashmap" resultType="com.wit.sullog.model.AlcholRecord">
+		SELECT * FROM
+		(SELECT B.seq, B.user_seq, B.alchol_seq, B.star, B.abv, B.incense, B.taste, B.texture, B.img_seq, B.time, B.flower, B.fruit, B.grain, B.nut, B.sweetness, B.dairy, B.etc FROM (SELECT * FROM alchol WHERE name LIKE CONCAT('%', #{keyword}, '%') ) AS A INNER JOIN alchol_record AS B ON A.seq=B.alchol_seq
+		UNION DISTINCT
+		SELECT C.seq, C.user_seq, C.alchol_seq, C.star, C.abv, C.incense, C.taste, C.texture, C.img_seq, C.time, C.flower, C.fruit, C.grain, C.nut, C.sweetness, C.dairy, C.etc FROM (SELECT * FROM alchol_record WHERE abv LIKE CONCAT('%', #{keyword}, '%') OR flower LIKE CONCAT('%', #{keyword}, '%') OR fruit LIKE CONCAT('%', #{keyword}, '%') OR grain LIKE CONCAT('%', #{keyword}, '%') OR nut LIKE CONCAT('%', #{keyword}, '%') OR sweetness LIKE CONCAT('%', #{keyword}, '%') OR dairy LIKE CONCAT('%', #{keyword}, '%') OR etc LIKE CONCAT('%', #{keyword}, '%')) AS C INNER JOIN alchol AS D ON D.seq=C.alchol_seq) AS E
+		WHERE E.user_seq=#{user_seq}
+	</select>
 	
 	<select id="getAlchols" parameterType="hashmap" resultType="com.wit.sullog.model.Alchol">
 		SELECT * FROM alchol
@@ -40,7 +47,7 @@
 		SELECT * FROM alchol
 	</select> -->
 	<select id="searchAlcholsByKeyword" parameterType="hashmap" resultType="com.wit.sullog.model.Alchol">
-		SELECT * FROM alchol WHERE name LIKE CONCAT('%', #{keyword}, '%')
+		SELECT * FROM alchol WHERE name LIKE CONCAT('%', #{keyword}, '%') OR type LIKE CONCAT('%', #{keyword}, '%') OR ingredients LIKE CONCAT('%', #{keyword}, '%') OR manufacturer LIKE CONCAT('%', #{keyword}, '%') OR owner LIKE CONCAT('%', #{keyword}, '%') OR province LIKE CONCAT('%', #{keyword}, '%') OR city LIKE CONCAT('%', #{keyword}, '%')
 	</select>
 	<!--
 	<select id="searchAlcholsByKeyword" parameterType="String" resultType="com.wit.sullog.model.Alchol">

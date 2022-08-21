@@ -21,5 +21,4 @@ public enum StatusEnum {
         this.statusResult = statusResult;
         this.httpStatus = httpStatus;
     }
-
 }

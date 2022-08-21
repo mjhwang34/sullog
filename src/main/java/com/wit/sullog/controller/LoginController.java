@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -18,6 +19,7 @@ import com.wit.sullog.service.LoginService;
 
 @Controller
 @RequestMapping("/login")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class LoginController {
 	
 	@Autowired
@@ -54,7 +56,7 @@ public class LoginController {
 		message.setData(loginInfo);
 		//return message;
 		//return "redirect:http://localhost:8080/hi/here";
-		return "redirect:" + "http://localhost:3000?result=success&"+"type=naver&email="+loginInfo.get("email")+"&access_token="+loginInfo.get("access_token");
+		return "redirect:" + "http://localhost:3000/login?result=success&"+"type=naver&email="+loginInfo.get("email")+"&access_token="+loginInfo.get("access_token");
 	}
 	
 	@GetMapping("/kakaoLoginCallback")
@@ -70,7 +72,7 @@ public class LoginController {
 		System.out.println(loginInfo);
 		int affectedrows = loginService.insertUser(loginInfo);
 		//return "redirect:http://localhost:8080/hi/here";
-		return "redirect:http://localhost:3000?result=success&type=kakao&email="+loginInfo.get("email")+"&accesss_token="+access_token;
+		return "redirect:http://localhost:3000/login?result=success&type=kakao&email="+loginInfo.get("email")+"&access_token="+access_token;
 	}
 
 }

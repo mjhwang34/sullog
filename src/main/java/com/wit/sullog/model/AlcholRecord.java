@@ -12,10 +12,20 @@ public class AlcholRecord {
 	private int seq;
 	private int user_seq;
 	private int alchol_seq;
+	private String star;
+	private String abv;
+	private String incense;
 	private String taste;
+	private String texture;
 	private String img_seq;
-	private String people;
 	@JsonFormat(timezone="Asia/Seoul")
 	private Timestamp time;
+	private String flower;
+	private String fruit;
+	private String grain;
+	private String nut;
+	private String sweetness;
+	private String dairy;
+	private String etc;
 
 }

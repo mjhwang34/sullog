@@ -14,7 +14,7 @@ public class Message {
     private Object data;
 
     public Message() {
-        this.code = StatusEnum.OK.getStatusCode();
+    	this.code = StatusEnum.OK.getStatusCode();
         this.data = null;
         this.result = "success";
     }

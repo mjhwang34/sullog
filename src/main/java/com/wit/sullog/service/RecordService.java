@@ -41,5 +41,7 @@ public class RecordService {
     public List <String> getImageByAlcholSeq(int alchol_seq){
     	return mainMapper.getImageByAlcholSeq(alchol_seq);
     }
-
+    public List <AlcholRecord> searchRecordByKeyword(HashMap <String, Object> info){
+    	return mainMapper.searchRecordByKeyword(info);
+    }
 }

@@ -19,7 +19,6 @@ import com.wit.sullog.service.LoginService;
 
 @Controller
 @RequestMapping("/login")
-@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class LoginController {
 	
 	@Autowired

@@ -11,8 +11,15 @@
 		SELECT * FROM login WHERE email = #{email} AND type=#{type}
 	</select>
 	
+	<!--
 	<select id="getRecordsByUserSeq" resultType="com.wit.sullog.model.AlcholRecordResponse">
 		SELECT * FROM alchol_record WHERE user_seq=#{user_seq}
+	</select>-->
+	<select id="getRecordsByUserSeq" resultType="com.wit.sullog.model.AlcholRecordResponse2">
+		SELECT A.seq, A.user_seq, A.alchol_seq, A.star, A.abv, A.incense, A.taste, A.texture, A.img_seq, A.time, A.flower, A.fruit, A.grain, A.nut, A.sweetness, A.dairy, A.etc, C.name, C.type, C.abv AS abv_num, C.volume, C.price, C.ingredients, C.manufacturer, C.owner, C.lat, C.lng, C.province, C.city, C.phone FROM 
+		(SELECT * FROM alchol_record WHERE user_seq=#{user_seq}) AS A INNER JOIN
+		(SELECT B.seq, B.name, B.type, B.abv, B.volume, B.price, B.ingredients, B.manufacturer, B.owner, B.lat, B.lng, B.province, B.city, B.phone FROM alchol AS B) AS C
+		ON A.alchol_seq=C.seq
 	</select>
 	<insert id="insertRecord" parameterType="com.wit.sullog.model.AlcholRecord" >
 		INSERT INTO alchol_record (user_seq, alchol_seq, star, abv, incense, taste, texture, img_seq, time, flower, fruit, grain, nut, sweetness, dairy, etc)
@@ -22,8 +29,15 @@
 		UPDATE alchol_record SET star = #{star}, abv = #{abv}, incense = #{incense}, taste = #{taste}, texture = #{texture}, img_seq = #{img_seq}, time = #{time}, flower = #{flower}, fruit = #{fruit}, grain = #{grain}, nut = #{nut}, sweetness = #{sweetness}, dairy = #{dairy}, etc = #{etc} 
 		WHERE user_seq = #{user_seq} AND alchol_seq=#{alchol_seq}
 	</update>
+	<!--
 	<select id="getRecordByUserSeqAndAlcholSeq" parameterType="hashmap" resultType="com.wit.sullog.model.AlcholRecordResponse">
 		SELECT * FROM alchol_record WHERE user_seq=#{user_seq} AND alchol_seq=#{alchol_seq}
+	</select> -->
+	<select id="getRecordByUserSeqAndAlcholSeq" parameterType="hashmap" resultType="com.wit.sullog.model.AlcholRecordResponse2">
+		SELECT A.seq, A.user_seq, A.alchol_seq, A.star, A.abv, A.incense, A.taste, A.texture, A.img_seq, A.time, A.flower, A.fruit, A.grain, A.nut, A.sweetness, A.dairy, A.etc, C.name, C.type, C.abv AS abv_num, C.volume, C.price, C.ingredients, C.manufacturer, C.owner, C.lat, C.lng, C.province, C.city, C.phone FROM 
+		(SELECT * FROM alchol_record WHERE user_seq=#{user_seq} AND alchol_seq=#{alchol_seq}) AS A INNER JOIN
+		(SELECT B.seq, B.name, B.type, B.abv, B.volume, B.price, B.ingredients, B.manufacturer, B.owner, B.lat, B.lng, B.province, B.city, B.phone FROM alchol AS B) AS C
+		ON A.alchol_seq=C.seq
 	</select>
 	<delete id="deleteRecordByUserSeqAndAlcholSeq" parameterType="hashmap">
 		DELETE FROM alchol_record WHERE user_seq=#{user_seq} AND alchol_seq=#{alchol_seq}
@@ -31,12 +45,22 @@
 	<select id="getImageByAlcholSeq" parameterType="int" resultType="String">
 		SELECT img_seq FROM alchol_record WHERE alchol_seq=#{alchol_seq}
 	</select>
-	<select id="searchRecordByKeyword" parameterType="hashmap" resultType="com.wit.sullog.model.AlcholRecord">
+	<select id="searchRecordByKeyword" parameterType="hashmap" resultType="com.wit.sullog.model.AlcholRecordResponse1">
 		SELECT * FROM
-		(SELECT B.seq, B.user_seq, B.alchol_seq, B.star, B.abv, B.incense, B.taste, B.texture, B.img_seq, B.time, B.flower, B.fruit, B.grain, B.nut, B.sweetness, B.dairy, B.etc FROM (SELECT * FROM alchol WHERE name LIKE CONCAT('%', #{keyword}, '%') ) AS A INNER JOIN alchol_record AS B ON A.seq=B.alchol_seq
+		(SELECT A.name, A.type, A.abv AS abv_num, A.volume, A.price, A.ingredients, A.manufacturer, A.owner, A.lat, A.lng, A.province, A.city, A.phone, B.seq, B.user_seq, B.alchol_seq, B.star, B.abv, B.incense, B.taste, B.texture, B.img_seq, B.time, B.flower, B.fruit, B.grain, B.nut, B.sweetness, B.dairy, B.etc FROM (SELECT * FROM alchol WHERE name LIKE CONCAT('%', #{keyword}, '%') ) AS A INNER JOIN alchol_record AS B ON A.seq=B.alchol_seq
 		UNION DISTINCT
-		SELECT C.seq, C.user_seq, C.alchol_seq, C.star, C.abv, C.incense, C.taste, C.texture, C.img_seq, C.time, C.flower, C.fruit, C.grain, C.nut, C.sweetness, C.dairy, C.etc FROM (SELECT * FROM alchol_record WHERE abv LIKE CONCAT('%', #{keyword}, '%') OR flower LIKE CONCAT('%', #{keyword}, '%') OR fruit LIKE CONCAT('%', #{keyword}, '%') OR grain LIKE CONCAT('%', #{keyword}, '%') OR nut LIKE CONCAT('%', #{keyword}, '%') OR sweetness LIKE CONCAT('%', #{keyword}, '%') OR dairy LIKE CONCAT('%', #{keyword}, '%') OR etc LIKE CONCAT('%', #{keyword}, '%')) AS C INNER JOIN alchol AS D ON D.seq=C.alchol_seq) AS E
+		SELECT D.name, D.type, D.abv AS abv_num, D.volume, D.price, D.ingredients, D.manufacturer, D.owner, D.lat, D.lng, D.province, D.city, D.phone, C.seq, C.user_seq, C.alchol_seq, C.star, C.abv, C.incense, C.taste, C.texture, C.img_seq, C.time, C.flower, C.fruit, C.grain, C.nut, C.sweetness, C.dairy, C.etc FROM (SELECT * FROM alchol_record WHERE abv LIKE CONCAT('%', #{keyword}, '%') OR flower LIKE CONCAT('%', #{keyword}, '%') OR fruit LIKE CONCAT('%', #{keyword}, '%') OR grain LIKE CONCAT('%', #{keyword}, '%') OR nut LIKE CONCAT('%', #{keyword}, '%') OR sweetness LIKE CONCAT('%', #{keyword}, '%') OR dairy LIKE CONCAT('%', #{keyword}, '%') OR etc LIKE CONCAT('%', #{keyword}, '%')) AS C INNER JOIN alchol AS D ON D.seq=C.alchol_seq) AS E
 		WHERE E.user_seq=#{user_seq}
+	</select>
+	<!--
+	<select id="getAllRecords" resultType="com.wit.sullog.model.AlcholRecordResponse">
+		SELECT * FROM alchol_record
+	</select> -->
+	<select id="getAllRecords" resultType="com.wit.sullog.model.AlcholRecordResponse2">
+		SELECT A.seq, A.user_seq, A.alchol_seq, A.star, A.abv, A.incense, A.taste, A.texture, A.img_seq, A.time, A.flower, A.fruit, A.grain, A.nut, A.sweetness, A.dairy, A.etc, C.name, C.type, C.abv AS abv_num, C.volume, C.price, C.ingredients, C.manufacturer, C.owner, C.lat, C.lng, C.province, C.city, C.phone FROM 
+		(SELECT * FROM alchol_record) AS A INNER JOIN
+		(SELECT B.seq, B.name, B.type, B.abv, B.volume, B.price, B.ingredients, B.manufacturer, B.owner, B.lat, B.lng, B.province, B.city, B.phone FROM alchol AS B) AS C
+		ON A.alchol_seq=C.seq
 	</select>
 	
 	<select id="getAlchols" parameterType="hashmap" resultType="com.wit.sullog.model.Alchol">

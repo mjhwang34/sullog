@@ -34,6 +34,8 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.wit.sullog.model.AlcholRecord;
 import com.wit.sullog.model.AlcholRecordResponse;
+import com.wit.sullog.model.AlcholRecordResponse1;
+import com.wit.sullog.model.AlcholRecordResponse2;
 import com.wit.sullog.model.Message;
 import com.wit.sullog.service.RecordService;
 
@@ -42,7 +44,6 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @Slf4j
 @RequestMapping("/record")
-@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class RecordController {
 
 	@Autowired
@@ -59,9 +60,10 @@ public class RecordController {
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		System.out.println(formatter.format(date));
 		System.out.println("user_seq: "+ user_seq);
-		List <AlcholRecordResponse> record_list = new ArrayList <>();
+		List <AlcholRecordResponse2> record_list = new ArrayList <>();
 		record_list = recordService.getRecordsByUserSeq(user_seq);
 		for(int i=0; i<record_list.size(); i++) {
+			if(record_list.get(i).getImg_seq()==null) continue;
 			String file_name_string = record_list.get(i).getImg_seq();
 			List file_name_list = fileNameStringToList(file_name_string);
 			List image_byte = new ArrayList <>();
@@ -92,21 +94,23 @@ public class RecordController {
 		HashMap <String, Integer> info = new HashMap<String, Integer>();
 		info.put("user_seq", user_seq);
 		info.put("alchol_seq", alchol_seq);
-		AlcholRecordResponse record_response = recordService.getRecordByUserSeqAndAlcholSeq(info);
+		AlcholRecordResponse2 record_response = recordService.getRecordByUserSeqAndAlcholSeq(info);
 		String file_name_string = record_response.getImg_seq();
-		List file_name_list = fileNameStringToList(file_name_string);
-		List image_byte = new ArrayList <>();
-		for(int j=0; j<file_name_list.size(); j++) {
-			byte[] image_to_byte = null;
-			try {
-				image_to_byte = getImgByteArray(file_name_list.get(j).toString());
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+		if(file_name_string!=null) {
+			List file_name_list = fileNameStringToList(file_name_string);
+			List image_byte = new ArrayList <>();
+			for(int j=0; j<file_name_list.size(); j++) {
+				byte[] image_to_byte = null;
+				try {
+					image_to_byte = getImgByteArray(file_name_list.get(j).toString());
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				image_byte.add(image_to_byte);
 			}
-			image_byte.add(image_to_byte);
+			record_response.setImage_byte(image_byte);
 		}
-		record_response.setImage_byte(image_byte);
 		Message message = new Message();
 		message.setData(record_response);
 		return message;
@@ -124,18 +128,18 @@ public class RecordController {
 		HashMap <String, Integer> info = new HashMap<>();
 		info.put("user_seq", record.getUser_seq());
 		info.put("alchol_seq", record.getAlchol_seq());
-		AlcholRecordResponse foundRecord = null;
-		foundRecord = recordService.getRecordByUserSeqAndAlcholSeq(info);
+		AlcholRecordResponse2 foundRecord2 = null;
+		foundRecord2 = recordService.getRecordByUserSeqAndAlcholSeq(info);
 		int res=-1;
 		try {
-			if(foundRecord==null) { //추가
+			if(foundRecord2==null) { //추가
 				System.out.println("insert");
 				res = recordService.insertRecord(record);
 			}
 			else { //업데이트
 				System.out.println("update");
-				if(foundRecord.getImg_seq()!=null) {
-					record.setImg_seq(foundRecord.getImg_seq());
+				if(foundRecord2.getImg_seq()!=null) {
+					record.setImg_seq(foundRecord2.getImg_seq());
 				}
 				res = recordService.updateRecord(record);
 			}
@@ -168,9 +172,9 @@ public class RecordController {
 		try {
 			info.put("user_seq", user_seq);
 			info.put("alchol_seq", alchol_seq);
-			AlcholRecordResponse alcholRecord = recordService.getRecordByUserSeqAndAlcholSeq(info);
+			AlcholRecordResponse2 alcholRecord2 = recordService.getRecordByUserSeqAndAlcholSeq(info);
 			res = recordService.deleteRecordByUserSeqAndAlcholSeq(info);
-			List file_name_list = fileNameStringToList(alcholRecord.getImg_seq());
+			List file_name_list = fileNameStringToList(alcholRecord2.getImg_seq());
 			deleteImg(file_name_list);
 		}
 		catch(Exception e) {
@@ -210,12 +214,12 @@ public class RecordController {
         HashMap <String, Integer> info = new HashMap<>();
         info.put("user_seq", user_seq);
 		info.put("alchol_seq", alchol_seq);
-		AlcholRecordResponse foundRecord = null;
-		foundRecord = recordService.getRecordByUserSeqAndAlcholSeq(info);
+		AlcholRecordResponse2 foundRecord2 = null;
+		foundRecord2 = recordService.getRecordByUserSeqAndAlcholSeq(info);
 		AlcholRecord record = new AlcholRecord();
 		int res=-1;
 		try {
-			if(foundRecord==null) { //추가
+			if(foundRecord2==null) { //추가
 				System.out.println("insert");
 				record.setAlchol_seq(alchol_seq);
 				record.setUser_seq(user_seq);
@@ -224,7 +228,7 @@ public class RecordController {
 			}
 			else { //업데이트
 				System.out.println("update");
-				record = setAlcholRecord(foundRecord, file_name_string);
+				record = setAlcholRecord(foundRecord2, file_name_string);
 				res = recordService.updateRecord(record);
 			}
 		}
@@ -277,7 +281,7 @@ public class RecordController {
 	
 	@GetMapping("searchRecord")
 	public Message searchRecordByKeyword(@RequestParam int user_seq, @RequestParam String keyword) {
-		System.out.println("********************getImage********************");
+		System.out.println("********************searchRecord********************");
 		Date date = new Date();
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		System.out.println(formatter.format(date));
@@ -286,9 +290,39 @@ public class RecordController {
 		HashMap <String, Object> info = new HashMap<>();
 		info.put("user_seq", user_seq);
 		info.put("keyword", keyword);
-		List <AlcholRecord> data = recordService.searchRecordByKeyword(info);
+		List <AlcholRecordResponse1> data = recordService.searchRecordByKeyword(info);
 		Message message = new Message();
 		message.setData(data);
+		return message;
+	}
+	
+	@GetMapping("getAllRecords")
+	public Message getAllRecords() {
+		System.out.println("********************getAllRecords********************");
+		Date date = new Date();
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		System.out.println(formatter.format(date));
+		List <AlcholRecordResponse2> record_list = new ArrayList <>();
+		record_list = recordService.getAllRecords();
+		for(int i=0; i<record_list.size(); i++) {
+			if(record_list.get(i).getImg_seq()==null) continue;
+			String file_name_string = record_list.get(i).getImg_seq();
+			List file_name_list = fileNameStringToList(file_name_string);
+			List image_byte = new ArrayList <>();
+			for(int j=0; j<file_name_list.size(); j++) {
+				byte[] image_to_byte = null;
+				try {
+					image_to_byte = getImgByteArray(file_name_list.get(j).toString());
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				image_byte.add(image_to_byte);
+			}
+			record_list.get(i).setImage_byte(image_byte);
+		}
+		Message message = new Message();
+		message.setData(record_list);
 		return message;
 	}
 
@@ -310,55 +344,55 @@ public class RecordController {
 		return image_to_byte;
 	}
 	
-	public AlcholRecord setAlcholRecord(AlcholRecordResponse foundRecord, String file_name_string) {
+	public AlcholRecord setAlcholRecord(AlcholRecordResponse2 foundRecord2, String file_name_string) {
 		AlcholRecord record = new AlcholRecord();
-		record.setAlchol_seq(foundRecord.getAlchol_seq());
-		record.setUser_seq(foundRecord.getUser_seq());
+		record.setAlchol_seq(foundRecord2.getAlchol_seq());
+		record.setUser_seq(foundRecord2.getUser_seq());
 		record.setImg_seq(file_name_string);
-		if(foundRecord.getStar()!=null) {
-			record.setStar(foundRecord.getStar());
+		if(foundRecord2.getStar()!=null) {
+			record.setStar(foundRecord2.getStar());
 		}
-		if(foundRecord.getAbv()!=null) {
-			record.setAbv(foundRecord.getAbv());
+		if(foundRecord2.getAbv()!=null) {
+			record.setAbv(foundRecord2.getAbv());
 		}
-		if(foundRecord.getStar()!=null) {
-			record.setTaste(foundRecord.getTaste());
+		if(foundRecord2.getStar()!=null) {
+			record.setTaste(foundRecord2.getTaste());
 		}
-		if(foundRecord.getIncense()!=null) {
-			record.setIncense(foundRecord.getIncense());
+		if(foundRecord2.getIncense()!=null) {
+			record.setIncense(foundRecord2.getIncense());
 		}
-		if(foundRecord.getTaste()!=null) {
-			record.setTaste(foundRecord.getTaste());
+		if(foundRecord2.getTaste()!=null) {
+			record.setTaste(foundRecord2.getTaste());
 		}
-		if(foundRecord.getTexture()!=null) {
-			record.setTexture(foundRecord.getTexture());
+		if(foundRecord2.getTexture()!=null) {
+			record.setTexture(foundRecord2.getTexture());
 		}
-		if(foundRecord.getImg_seq()!=null) {
-			record.setImg_seq(foundRecord.getImg_seq());
+		if(foundRecord2.getImg_seq()!=null) {
+			record.setImg_seq(foundRecord2.getImg_seq());
 		}
-		if(foundRecord.getTime()!=null) {
-			record.setTime(foundRecord.getTime());
+		if(foundRecord2.getTime()!=null) {
+			record.setTime(foundRecord2.getTime());
 		}
-		if(foundRecord.getFlower()!=null) {
-			record.setFlower(foundRecord.getFlower());
+		if(foundRecord2.getFlower()!=null) {
+			record.setFlower(foundRecord2.getFlower());
 		}
-		if(foundRecord.getFruit()!=null) {
-			record.setFruit(foundRecord.getFruit());
+		if(foundRecord2.getFruit()!=null) {
+			record.setFruit(foundRecord2.getFruit());
 		}
-		if(foundRecord.getGrain()!=null) {
-			record.setGrain(foundRecord.getGrain());
+		if(foundRecord2.getGrain()!=null) {
+			record.setGrain(foundRecord2.getGrain());
 		}
-		if(foundRecord.getNut()!=null) {
-			record.setNut(foundRecord.getNut());
+		if(foundRecord2.getNut()!=null) {
+			record.setNut(foundRecord2.getNut());
 		}
-		if(foundRecord.getSweetness()!=null) {
-			record.setSweetness(foundRecord.getSweetness());
+		if(foundRecord2.getSweetness()!=null) {
+			record.setSweetness(foundRecord2.getSweetness());
 		}
-		if(foundRecord.getDairy()!=null) {
-			record.setDairy(foundRecord.getDairy());
+		if(foundRecord2.getDairy()!=null) {
+			record.setDairy(foundRecord2.getDairy());
 		}
-		if(foundRecord.getEtc()!=null) {
-			record.setEtc(foundRecord.getEtc());
+		if(foundRecord2.getEtc()!=null) {
+			record.setEtc(foundRecord2.getEtc());
 		}
 		record.setImg_seq(file_name_string);
 		return record;

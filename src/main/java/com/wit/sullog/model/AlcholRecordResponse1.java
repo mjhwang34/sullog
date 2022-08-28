@@ -1,15 +1,14 @@
 package com.wit.sullog.model;
 
 import java.sql.Timestamp;
-import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.Data;
 
 @Data
-public class AlcholRecordResponse {
-	/*
+public class AlcholRecordResponse1 {
+	
 	private int seq;
 	private int user_seq;
 	private int alchol_seq;
@@ -28,6 +27,18 @@ public class AlcholRecordResponse {
 	private String sweetness;
 	private String dairy;
 	private String etc;
-	private List<byte[]> image_byte;
-	*/
+	private String name;
+	private String type;
+	private String abv_num;
+	private String volume;
+	private String price;
+	private String ingredients;
+	private String manufacturer;
+	private String owner;
+	private String lat;
+	private String lng;
+	private String province;
+	private String city;
+	private String phone;
+	
 }
